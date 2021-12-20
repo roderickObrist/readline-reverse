@@ -70,7 +70,13 @@ module.exports = class ReadlineReverse {
   async [READ_TRUNK] () {
     if (this[FILE_POSITION] < 0) return false
     const position = this[FILE_POSITION] - this[BUFFER].length + 1
-    const { bytesRead } = await read(this[FD], this[BUFFER], 0, this[BUFFER].length, Math.max(position, 0))
+    const { bytesRead } = await read(
+      this[FD],
+      this[BUFFER],
+      0,
+      Math.min(this[BUFFER].length, this[FILE_POSITION] + 1),
+      Math.max(position, 0)
+    )
     this[FILE_POSITION] = position - 1
     this[BUFFER_POSITION] = bytesRead - 1
     return bytesRead > 0
@@ -115,6 +121,7 @@ module.exports = class ReadlineReverse {
       this[EMPTY_FIRST_LINE] = false
       res = ''
     }
+
     return res
   }
 
